@@ -4,9 +4,14 @@ const mongoose = require("mongoose");
 const app = express();
 const port = process.env.PORT || 8080;
 mongoose
-  .connect("mongodb://abcefgh:ijklmno@172.21.0.2:27017/authSource=admin")
+  .connect(
+    `mongodb://${process.env.USERNAME}:${process.env.PASSWORD}@172.21.0.3:27017/?authSource=admin`
+  )
   .then(() => {
     console.log("successfully connected");
+  })
+  .catch((e) => {
+    console.log(e);
   });
 
 app.get("/", (req, res) => res.send("HELLO WORLD"));
