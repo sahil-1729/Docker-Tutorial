@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 mongoose
   .connect(
-    `mongodb://${process.env.USERNAME}:${process.env.PASSWORD}@172.21.0.3:27017/?authSource=admin`
+    `mongodb://${process.env.USERNAME}:${process.env.PASSWORD}@mongo:27017/?authSource=admin`
   )
   .then(() => {
     console.log("successfully connected");
