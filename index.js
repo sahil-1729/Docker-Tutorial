@@ -1,11 +1,19 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const {
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+  MONGO_IP,
+  MONGO_PORT,
+  PORT,
+} = require("./config/config");
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = PORT;
+
 mongoose
   .connect(
-    `mongodb://${process.env.USERNAME}:${process.env.PASSWORD}@mongo:27017/?authSource=admin`
+    `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`
   )
   .then(() => {
     console.log("successfully connected");
