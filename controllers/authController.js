@@ -1,9 +1,15 @@
 const User = require("../models/userModel");
+const Bcrypt = require("bcryptjs");
 
 exports.signup = async (req, res) => {
-  const newUser = await User.create(req.body);
+  const { username, password } = req.body;
+  const hashPassword = await Bcrypt.hash(password, 12);
 
   try {
+    const newUser = await User.create({
+      username,
+      password: hashPassword,
+    });
     res.status(201).json({
       status: "success",
       data: {
@@ -11,76 +17,41 @@ exports.signup = async (req, res) => {
       },
     });
   } catch (e) {
+    console.log(e);
     res.status(400).json({
       status: "fail",
     });
   }
 };
 
-// exports.getOnePost = async (req, res, next) => {
-//   const post = await Post.findById(req.params.id);
+exports.login = async (req, res) => {
+  const { username, password } = req.body;
 
-//   try {
-//     res.status(200).json({
-//       status: "success",
-//       data: {
-//         post,
-//       },
-//     });
-//   } catch (e) {
-//     res.status(400).json({
-//       status: "fail",
-//     });
-//   }
-// };
+  try {
+    const user = await User.findOne({ username });
 
-// exports.createPost = async (req, res, next) => {
-//   const post = await Post.create(req.body);
+    if (!user) {
+      return res.status(404).json({
+        status: "fail",
+        message: "user not found",
+      });
+    }
 
-//   try {
-//     res.status(200).json({
-//       status: "success",
-//       data: {
-//         post,
-//       },
-//     });
-//   } catch (e) {
-//     res.status(400).json({
-//       status: "fail",
-//     });
-//   }
-// };
-
-// exports.updatePost = async (req, res, next) => {
-//   const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
-//     new: true,
-//     runValidators: true,
-//   });
-
-//   try {
-//     res.status(200).json({
-//       status: "success",
-//       data: {
-//         post,
-//       },
-//     });
-//   } catch (e) {
-//     res.status(400).json({
-//       status: "fail",
-//     });
-//   }
-// };
-
-// exports.deletePost = async (req, res, next) => {
-//   const post = await Post.findByIdAndDelete(req.params.id);
-
-//   try {
-//     res.status(200).json({
-//       status: "success",
-//     });
-//   } catch (e) {
-//     res.status(400).json({
-//       status: "fail",
-//     });
-//   }
-// };
+    const isCorrect = await Bcrypt.compare(password, user.password);
+    if (isCorrect) {
+      res.status(200).json({
+        status: "success",
+      });
+    } else {
+      res.status(400).json({
+        status: "fail",
+        message: "incorrect password or username",
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: "fail",
+    });
+  }
+};
